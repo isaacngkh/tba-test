@@ -1,42 +1,11 @@
 import requests
-import creds
+import api
 import csv
-
-headers = {
-    'accept': 'application/json',
-    'X-TBA-Auth-Key': creds.api_key,
-}
-
-statebotics_headers = {
-    'accept': 'application/json'
-}
-
-def getTeams(event_key: str):
-  return requests.get('https://www.thebluealliance.com/api/v3/event/' + event_key + '/teams/simple', headers=headers)
-
-def getTeamsKeys(event_key: str):
-  return requests.get('https://www.thebluealliance.com/api/v3/event/' + event_key + '/teams/keys', headers=headers)
-
-def getTeamsEvents(team_key: str, year: int):
-  return requests.get('https://www.thebluealliance.com/api/v3/team/' + team_key + '/events/' + str(year) + '/keys', headers=headers)
-
-def getTeamsEventsMatches(team_key: str, event_key: str):
-  return requests.get('https://www.thebluealliance.com/api/v3/team/' + team_key + '/events/' + event_key + '/matches/keys', headers=headers)
-
-def getMatchKeys(event_key: str):
-  return requests.get('https://www.thebluealliance.com/api/v3/event/' + event_key + '/matches/simple', headers=headers)
-
-def getMatchResult(match_key: str):
-  return requests.get('https://www.thebluealliance.com/api/v3/match/' + match_key, headers=headers)
-
-def getTeamStat(team_key: str):
-  return requests.get('https://api.statbotics.io/v3/team/' + team_key, headers = statebotics_headers)
-
 
 event_key = '2025casf'
 file_name = event_key
 
-r = getTeamsKeys(event_key)
+r = api.getTeamsKeys(event_key)
 if not r.ok:
     print("ERROR: Request to get teams for event key " + event_key + " failed.")
     exit()
@@ -63,4 +32,4 @@ for team in request_json:
     writer = csv.writer(f)
     writer.writerow(field)
 
-print(getTeamsEventsMatches("frc5507", getTeamsEvents("frc5507", 2025).json()[0]))
+print(api.getTeamsEventsMatches("frc5507", api.getTeamsEvents("frc5507", 2025).json()[0]))

@@ -1,24 +1,9 @@
-import requests
-import creds
 import csv
-
-headers = {
-    'accept': 'application/json',
-    'X-TBA-Auth-Key': creds.api_key,
-}
-
-def getTeams(event_key: str):
-  return requests.get('https://www.thebluealliance.com/api/v3/event/' + event_key + '/teams/simple', headers=headers)
-
-def getMatchKeys(event_key: str):
-  return requests.get('https://www.thebluealliance.com/api/v3/event/' + event_key + '/matches/simple', headers=headers)
-
-def getMatchResult(match_key: str):
-  return requests.get('https://www.thebluealliance.com/api/v3/match/' + match_key, headers=headers)
+import api
 
 
 event_key = '2024cabe'
-r = getMatchKeys(event_key)
+r = api.getMatchKeys(event_key)
 if not r.ok:
     print("ERROR: Request to get teams for event key " + event_key + " failed.")
     exit()
@@ -47,7 +32,7 @@ with open('output/output.csv', 'w', newline='') as f:
 
 for match in request_json:
   match_key = match['key']
-  r = getMatchResult(match_key)
+  r = api.getMatchResult(match_key)
 
   if not r.ok:
     print("ERROR: Request to get match result for match key " + match_key + " failed.")

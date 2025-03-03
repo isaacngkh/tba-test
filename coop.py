@@ -1,42 +1,10 @@
-import requests
-import creds
 import csv
-
-headers = {
-    'accept': 'application/json',
-    'X-TBA-Auth-Key': creds.api_key,
-}
-
-statebotics_headers = {
-    'accept': 'application/json'
-}
-
-def getTeams(event_key: str):
-  return requests.get('https://www.thebluealliance.com/api/v3/event/' + event_key + '/teams/simple', headers=headers)
-
-def getTeamsKeys(event_key: str):
-  return requests.get('https://www.thebluealliance.com/api/v3/event/' + event_key + '/teams/keys', headers=headers)
-
-def getTeamsEvents(team_key: str, year: int):
-  return requests.get('https://www.thebluealliance.com/api/v3/team/' + team_key + '/events/' + str(year) + '/keys', headers=headers)
-
-def getTeamsEventsMatches(team_key: str, event_key: str):
-  return requests.get('https://www.thebluealliance.com/api/v3/team/' + team_key + '/events/' + event_key + '/matches/keys', headers=headers)
-
-def getMatchKeys(event_key: str):
-  return requests.get('https://www.thebluealliance.com/api/v3/event/' + event_key + '/matches/simple', headers=headers)
-
-def getMatchResult(match_key: str):
-  return requests.get('https://www.thebluealliance.com/api/v3/match/' + match_key, headers=headers)
-
-def getTeamStat(team_key: str):
-  return requests.get('https://api.statbotics.io/v3/team/' + team_key, headers = statebotics_headers)
-
+import api
 
 event_key = '2025camb'
 file_name = event_key
 
-r = getMatchKeys(event_key)
+r = api.getMatchKeys(event_key)
 if not r.ok:
     print("ERROR: Request to get teams for event key " + event_key + " failed.")
     exit()
@@ -49,5 +17,22 @@ with open('output/' + file_name + '.csv', 'w', newline='') as f:
     writer = csv.writer(f)
     writer.writerow(header)
 
+match_count = 0
+coop = 0
+
 for match in request_json:
-  print(match['score_breakdown'])
+  match_key = match["key"]
+  match_result = api.getMatchResult(match_key)
+
+  match_result_json = match_result.json()
+
+  if(match_result_json["comp_level"] != "qm"):
+    continue
+
+  match_count += 1
+  coop += match_result_json["score_breakdown"]["blue"]["coopertitionCriteriaMet"] or match_result_json["score_breakdown"]["red"]["coopertitionCriteriaMet"]
+
+
+print("Match Count: " + str(match_count))
+print("Coop Total: " + str(coop))
+print("Percentage: " + str(coop / match_count))
