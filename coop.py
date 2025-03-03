@@ -11,11 +11,11 @@ if not r.ok:
 
 request_json = r.json()
 
-header = ['Team Number']
+# header = ['Team Number']
 
-with open('output/' + file_name + '.csv', 'w', newline='') as f:
-    writer = csv.writer(f)
-    writer.writerow(header)
+# with open('output/' + file_name + '.csv', 'w', newline='') as f:
+#     writer = csv.writer(f)
+#     writer.writerow(header)
 
 match_count = 0
 coop = 0
